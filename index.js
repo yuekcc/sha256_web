@@ -1,13 +1,19 @@
-import { hexUint8Array, sha256sum } from './dist/index.js';
+const { hexUint8Array, sha256sum } = require('./dist/index');
+const fs = require('fs');
+const { Crypto } = require('cryptojs');
 
 !(async () => {
-  const resp = await fetch('testdata/70mb.bin');
-  const buf = await resp.arrayBuffer();
-  const data = new Uint8Array(buf);
+  const testdata = fs.readFileSync('package-lock.json', 'utf-8');
 
   console.time('wasm sha256sum');
-  const hash = await sha256sum(data);
+  const result = await sha256sum(Buffer.from(testdata));
   console.timeEnd('wasm sha256sum');
 
-  document.body.textContent = hexUint8Array(hash);
+  console.log(hexUint8Array(result));
+
+  console.time('cryptojs sha256sum');
+  const hash = Crypto.SHA256(testdata);
+  console.timeEnd('cryptojs sha256sum');
+
+  console.log('hash with crypto:', hash);
 })();

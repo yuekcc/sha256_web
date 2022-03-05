@@ -35,6 +35,7 @@
     ]
   },
   "devDependencies": {
+    "cryptojs": "^2.5.3",
     "esbuild": "^0.14.25",
     "eslint": "^8.9.0",
     "eslint-config-prettier": "^8.3.0",

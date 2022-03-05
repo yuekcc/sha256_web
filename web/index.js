@@ -13,7 +13,11 @@ export function hexUint8Array(arr) {
   return arr.reduce((memo, i) => memo + i2hex(i), '');
 }
 
-async function stringToUint8Array(str) {
+export async function stringToUint8Array(str) {
+  if (Buffer && typeof Buffer.from === 'function') {
+    return Buffer.from(str, 'utf-8');
+  }
+
   const resp = new Response(str);
   const buf = await resp.arrayBuffer();
   return new Uint8Array(buf);
@@ -23,21 +27,16 @@ let _inited = false;
 
 /**
  * sha256 hash
- * @param {Uint8Array|string} uint8ArrayOrString
+ * @param {Uint8Array} uint8Arr
  * @returns {Uint8Array}
  */
-export async function sha256sum(uint8ArrayOrString) {
-  let data = uint8ArrayOrString;
-  if (typeof uint8ArrayOrString === 'string') {
-    data = stringToUint8Array(uint8ArrayOrString);
-  }
-
+export async function sha256sum(uint8Arr) {
   if (!_inited) {
     await init(sha256sumCoreBinary);
     _inited = true;
   }
 
-  return Sha256SumCore.hash(data);
+  return Sha256SumCore.hash(uint8Arr);
 }
 
 export const Sha256Sum = Sha256SumCore;

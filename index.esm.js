@@ -1,7 +1,7 @@
 import { hexUint8Array, sha256sum } from './dist/index.esm.js';
 
 !(async () => {
-  const resp = await fetch('package-lock.json');
+  const resp = await fetch('testdata/3mb.bin');
   const buf = await resp.arrayBuffer();
   const data = new Uint8Array(buf);
 

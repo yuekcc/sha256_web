@@ -3,10 +3,11 @@ const fs = require('fs');
 const { Crypto } = require('cryptojs');
 
 !(async () => {
-  const testdata = fs.readFileSync('package-lock.json', 'utf-8');
+  const testdata = fs.readFileSync('testdata/3mb.bin');
+  // const _testdata = Buffer.from(testdata);
 
   console.time('wasm sha256sum');
-  const result = await sha256sum(Buffer.from(testdata));
+  const result = await sha256sum(testdata);
   console.timeEnd('wasm sha256sum');
 
   console.log(hexUint8Array(result));

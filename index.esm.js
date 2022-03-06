@@ -1,13 +1,32 @@
-import { hexUint8Array, sha256sum } from './dist/index.esm.js';
+import { hexUint8Array, makeSha256Sum } from './dist/index.esm.js';
+
+function createFileChunks(file, size = 1024 * 1024) {
+  const chunks = [];
+  let cur = 0;
+  while (cur < file.size) {
+    chunks.push({ file: file.slice(cur, cur + size) });
+    cur += size;
+  }
+
+  return chunks;
+}
+
+let hash = null;
 
 !(async () => {
-  const resp = await fetch('testdata/3mb.bin');
-  const buf = await resp.arrayBuffer();
-  const data = new Uint8Array(buf);
+  const resp = await fetch('testdata/15mb.bin');
+  const blob = await resp.blob();
+  const chunks = createFileChunks(blob);
 
   console.time('wasm sha256sum');
-  const hash = await sha256sum(data);
-  console.timeEnd('wasm sha256sum');
+  const hasher = await makeSha256Sum();
+  for (const chunk of chunks) {
+    const buf = await chunk.file.arrayBuffer();
+    hasher.append(new Uint8Array(buf));
+  }
 
+  hash = hasher.end();
+})().finally(() => {
+  console.timeEnd('wasm sha256sum');
   document.body.textContent = hexUint8Array(hash);
-})();
+});

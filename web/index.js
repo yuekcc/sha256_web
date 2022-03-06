@@ -39,4 +39,11 @@ export async function sha256sum(uint8Arr) {
   return Sha256SumCore.hash(uint8Arr);
 }
 
-export const Sha256Sum = Sha256SumCore;
+export async function makeSha256Sum() {
+  if (!_inited) {
+    await init(sha256sumCoreBinary);
+    _inited = true;
+  }
+
+  return new Sha256SumCore();
+}
